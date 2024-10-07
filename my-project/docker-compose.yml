@@ -1,0 +1,35 @@
+version: '3.8'  # Specify the version of Docker Compose
+
+services:
+  web:
+    build: .
+    ports:
+      - "8001:80"
+    depends_on:
+      - db
+    volumes:
+      - ./server/public:/var/www/html:z
+      - ./server/controllers:/var/www/controllers:z
+      - ./server/services:/var/www/services:z
+      - ./server/models:/var/www/models:z 
+      - ./server/config:/var/www/config:z  # Add config mapping
+      - ./server/routes:/var/www/routes:z  # Add routes mapping
+      - ./server/uploads:/var/www/uploads:z  # Add bubun folder mapping
+    user: "1000:1000"
+
+  db:
+    image: mysql:8.1.0
+    environment:
+      MYSQL_ROOT_PASSWORD: 0
+      MYSQL_DATABASE: bubun-01
+    volumes:
+      - ./mysql_data:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - "8081:80"
+    depends_on:
+      - db
+    environment:
+      PMA_HOST: db
